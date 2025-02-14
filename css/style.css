@@ -255,3 +255,31 @@ button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Flying Objects */
+/* These objects will fly from left (offscreen) to right across the rocket-container */
+@keyframes flyBy {
+  0% {
+    left: -150px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+.flying-object {
+  position: absolute;
+  animation: flyBy 5s linear forwards;
+  pointer-events: none;
+  /* Adjust size if necessary */
+  width: 50px;
+  z-index: 2;
+}
