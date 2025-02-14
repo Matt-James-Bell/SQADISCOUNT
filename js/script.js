@@ -10,6 +10,7 @@ let accumulatedDiscount = 0;
 let playerJoined = false;
 let countdownInterval;
 let firstRun = true; // First run: 10 sec; subsequent: 5 sec
+let flyingInterval; // Interval for spawning flying objects
 
 function mapDiscountToNormalized(d) {
   if (d <= 2.00) {
@@ -120,6 +121,25 @@ function updateDisplay() {
   document.getElementById("current-discount").textContent = "Current: " + discount.toFixed(2) + "%";
 }
 
+function spawnFlyingObject() {
+  const container = document.getElementById("rocket-container");
+  const flyingImages = ["alien1.png", "alien2.png", "ufo1.png", "ufo2.png", "astro1.png", "saturn1.png", "earth1.png"];
+  const imageFile = flyingImages[Math.floor(Math.random() * flyingImages.length)];
+  const flyingElem = document.createElement("img");
+  flyingElem.src = "img/" + imageFile;
+  flyingElem.className = "flying-object";
+  // Set a random vertical position within the container (keeping within bounds)
+  const containerHeight = container.offsetHeight;
+  const randomTop = Math.random() * (containerHeight - 100) + 20;
+  flyingElem.style.top = randomTop + "px";
+  // Append the element so it starts its animation from offscreen left
+  container.appendChild(flyingElem);
+  // Remove the element once the animation completes
+  flyingElem.addEventListener("animationend", () => {
+    flyingElem.remove();
+  });
+}
+
 function startGame() {
   discount = 0.01;
   crashed = false;
@@ -152,6 +172,20 @@ function startGame() {
   console.log("Crash point set at: " + crashPoint.toFixed(2) + "%");
   
   gameInterval = setInterval(updateGame, 50);
+  
+  // Start spawning flying objects at random intervals during the game
+  flyingInterval = setInterval(() => {
+    if (gameActive) {
+      // 30% chance each second to spawn flying objects
+      if (Math.random() < 0.3) {
+        spawnFlyingObject();
+        // 50% chance to spawn a second object shortly after
+        if (Math.random() < 0.5) {
+          setTimeout(spawnFlyingObject, 500);
+        }
+      }
+    }
+  }, 1000);
 }
 
 function updateGame() {
@@ -174,6 +208,7 @@ function crash() {
   gameActive = false;
   crashed = true;
   clearInterval(gameInterval);
+  clearInterval(flyingInterval);
   if (playerJoined) {
     accumulatedDiscount = 0;
     updateAccumulatedDiscount();
@@ -195,6 +230,7 @@ function cashOut() {
   if (!gameActive || crashed || !playerJoined) return;
   gameActive = false;
   clearInterval(gameInterval);
+  clearInterval(flyingInterval);
   updateDisplay();
   document.getElementById("status").textContent = "Cashed out at " + discount.toFixed(2) + "% discount!";
   document.getElementById("cashout").disabled = true;
