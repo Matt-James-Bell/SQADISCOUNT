@@ -10,7 +10,7 @@ body {
   padding: 20px;
 }
 
-/* Title */
+/* Smaller Title */
 h1 {
   margin-bottom: 20px;
   font-size: 1.2em;
@@ -30,7 +30,7 @@ h1 {
   position: relative;
 }
 
-/* Countdown */
+/* Countdown Display */
 #countdown {
   position: absolute;
   top: 50%;
@@ -55,7 +55,7 @@ h1 {
   box-shadow: inset 0 0 15px rgba(0,0,0,0.7);
 }
 
-/* Rocket */
+/* Rocket Wrapper */
 #rocket-wrapper {
   position: absolute;
   left: 0;
@@ -65,6 +65,7 @@ h1 {
   transition: left 0.2s ease, bottom 0.2s ease;
 }
 
+/* Rocket */
 #rocket {
   position: absolute;
   bottom: 40px;
@@ -108,6 +109,38 @@ h1 {
   background: rgba(0,0,0,0.4);
 }
 
+/* Tick Marks */
+.tick {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 10px;
+  background: #fff;
+}
+
+/* Tick Labels */
+.tick-label {
+  position: absolute;
+  bottom: 10px;
+  font-size: 10px;
+  color: #fff;
+}
+
+/* Highlighted Tick Label */
+.tick-label.highlight {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Red Marker for Bottom Scale */
+.tick-marker {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  height: 30px;
+  background: red;
+}
+
 /* Vertical Ticker */
 #vertical-ticker {
   position: absolute;
@@ -119,31 +152,52 @@ h1 {
   background: rgba(0,0,0,0.4);
 }
 
-/* 🔥 Fixed Button Click Issue Without Changing Layout */
+/* Vertical Tick Marks */
+.v-tick {
+  position: absolute;
+  left: 0;
+  width: 8px;
+  height: 1px;
+  background: #fff;
+}
+
+/* Vertical Tick Labels */
+.v-tick-label {
+  position: absolute;
+  left: 10px;
+  font-size: 10px;
+  color: #fff;
+}
+
+/* Red Marker for Vertical Ticker */
+.v-tick-marker {
+  position: absolute;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: red;
+}
+
+/* Button Container */
 #button-container {
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   gap: 10px;
   margin: 10px 0;
 }
 
-/* Fully Clickable Buttons Without Moving Layout */
+/* Buttons */
 button {
   display: inline-block;
-  width: 140px;  /* Keeps buttons same size */
-  height: 50px;  /* Ensures entire button is clickable */
-  padding: 10px 0; /* Adjusted padding */
-  font-size: 1.2em;
+  padding: 10px 20px;
+  font-size: 1em;
   cursor: pointer;
   border: none;
   border-radius: 4px;
-  text-align: center;
   transition: background 0.3s, transform 0.2s;
   box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-  line-height: 50px; /* Fixes top-half click issue */
 }
 
-/* Button Styles */
 #ignite {
   background: #ff3b3f;
   color: #fff;
