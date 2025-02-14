@@ -10,7 +10,7 @@ body {
   padding: 20px;
 }
 
-/* Smaller Title */
+/* Title */
 h1 {
   margin-bottom: 20px;
   font-size: 1.2em;
@@ -98,7 +98,7 @@ h1 {
   text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
 }
 
-/* Bottom Scale (Tick Bar) */
+/* Bottom Scale */
 #bottom-scale {
   position: absolute;
   bottom: 0;
@@ -107,38 +107,6 @@ h1 {
   height: 30px;
   border-top: 1px solid #fff;
   background: rgba(0,0,0,0.4);
-}
-
-/* Tick Marks */
-.tick {
-  position: absolute;
-  bottom: 0;
-  width: 1px;
-  height: 10px;
-  background: #fff;
-}
-
-/* Tick Labels */
-.tick-label {
-  position: absolute;
-  bottom: 10px;
-  font-size: 10px;
-  color: #fff;
-}
-
-/* Highlighted Tick Label */
-.tick-label.highlight {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-/* Red Marker for Bottom Scale */
-.tick-marker {
-  position: absolute;
-  bottom: 0;
-  width: 2px;
-  height: 30px;
-  background: red;
 }
 
 /* Vertical Ticker */
@@ -150,32 +118,6 @@ h1 {
   height: 100%;
   border-left: 1px solid #fff;
   background: rgba(0,0,0,0.4);
-}
-
-/* Vertical Tick Marks */
-.v-tick {
-  position: absolute;
-  left: 0;
-  width: 8px;
-  height: 1px;
-  background: #fff;
-}
-
-/* Vertical Tick Labels */
-.v-tick-label {
-  position: absolute;
-  left: 10px;
-  font-size: 10px;
-  color: #fff;
-}
-
-/* Red Marker for Vertical Ticker */
-.v-tick-marker {
-  position: absolute;
-  left: 0;
-  width: 40px;
-  height: 2px;
-  background: red;
 }
 
 /* Button Container */
@@ -216,40 +158,4 @@ button:hover:not(:disabled) {
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-/* Bottom Info */
-#bottom-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  right: 10px;
-}
-
-/* Discount Displays */
-#discount-display {
-  font-size: 1.2em;
-  background: rgba(0,0,0,0.7);
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-
-#current-discount {
-  font-size: 1.2em;
-  background: #000;
-  color: #90ee90;
-  border: 1px solid #90ee90;
-  padding: 8px 12px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-}
-
-/* Status Display */
-#status {
-  font-size: 1.2em;
-  margin: 10px 0 20px;
-  color: #ddd;
 }
