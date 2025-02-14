@@ -132,7 +132,7 @@ function spawnFlyingObject() {
   const containerHeight = container.offsetHeight;
   const randomTop = Math.random() * (containerHeight - 100) + 20;
   flyingElem.style.top = randomTop + "px";
-  // Append the element so it starts its animation from offscreen left
+  // Append the element so it starts its animation from offscreen right
   container.appendChild(flyingElem);
   // Remove the element once the animation completes
   flyingElem.addEventListener("animationend", () => {
