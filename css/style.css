@@ -18,7 +18,7 @@ h1 {
   text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
 }
 
-/* Game Container (reverted to original size) */
+/* Game Container */
 #game-container {
   background: rgba(0,0,0,0.5);
   border: 2px solid rgba(255,255,255,0.3);
@@ -41,13 +41,12 @@ h1 {
   z-index: 100;
 }
 
-/* Rocket Container (scaled down for in-frame fit) */
+/* Rocket Container */
 #rocket-container {
   position: relative;
   width: 100%;
-  height: 400px; /* Reduced height */
+  height: 400px;
   margin-bottom: 20px;
-  /* Dark overlay added */
   background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../img/space6.jpg') no-repeat center center;
   background-size: cover;
   border: 2px solid rgba(255,255,255,0.3);
@@ -56,23 +55,23 @@ h1 {
   box-shadow: inset 0 0 15px rgba(0,0,0,0.7);
 }
 
-/* Rocket Wrapper (scaled down) */
+/* Rocket Wrapper */
 #rocket-wrapper {
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 120px;  /* Reduced width */
-  height: 160px; /* Reduced height */
+  width: 120px;
+  height: 160px;
   transition: left 0.2s ease, bottom 0.2s ease;
 }
 
-/* Rocket Image (scaled down) */
+/* Rocket Image */
 #rocket {
   position: absolute;
-  bottom: 40px;  /* Adjusted for new size */
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80px;  /* Reduced width */
+  width: 80px;
   z-index: 3;
   filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.7));
 }
@@ -80,7 +79,7 @@ h1 {
 /* Real-time Discount Display above Rocket */
 #ship-discount {
   position: absolute;
-  bottom: 75%;  /* Adjusted closer to rocket */
+  bottom: 75%;
   left: 50%;
   transform: translateX(-50%);
   font-size: 1em;
@@ -89,12 +88,12 @@ h1 {
   text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
 }
 
-/* Explosion Image (scaled down) */
+/* Explosion Image */
 #explosion {
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 120px; /* Adjusted width */
+  width: 120px;
   display: none;
   z-index: 4;
 }
@@ -110,38 +109,6 @@ h1 {
   background: rgba(0,0,0,0.4);
 }
 
-/* Tick Marks */
-.tick {
-  position: absolute;
-  bottom: 0;
-  width: 1px;
-  height: 10px;
-  background: #fff;
-}
-
-/* Tick Labels */
-.tick-label {
-  position: absolute;
-  bottom: 10px;
-  font-size: 10px;
-  color: #fff;
-}
-
-/* Highlighted Tick Label */
-.tick-label.highlight {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-/* Red Marker for Bottom Tick Bar */
-.tick-marker {
-  position: absolute;
-  bottom: 0;
-  width: 2px;
-  height: 30px;
-  background: red;
-}
-
 /* Vertical Ticker */
 #vertical-ticker {
   position: absolute;
@@ -153,87 +120,32 @@ h1 {
   background: rgba(0,0,0,0.4);
 }
 
-/* Vertical Tick Marks */
-.v-tick {
-  position: absolute;
-  left: 0;
-  width: 8px;
-  height: 1px;
-  background: #fff;
-}
-
-/* Vertical Tick Labels */
-.v-tick-label {
-  position: absolute;
-  left: 10px;
-  font-size: 10px;
-  color: #fff;
-}
-
-/* Red Marker for Vertical Ticker */
-.v-tick-marker {
-  position: absolute;
-  left: 0;
-  width: 40px;
-  height: 2px;
-  background: red;
-}
-
-/* Button Container - side by side */
+/* Button Container - Keeps buttons centered and side by side */
 #button-container {
-  display: inline-flex;
+  display: flex;
   justify-content: center;
   gap: 10px;
   margin: 10px 0;
 }
 
-/* Bottom Info Container */
-#bottom-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  right: 10px;
-}
-
-/* Total Discount Display (bottom left) */
-#discount-display {
-  font-size: 1.2em;
-  background: rgba(0,0,0,0.7);
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-
-/* Current Run Discount Display (bottom right) */
-#current-discount {
-  font-size: 1.2em;
-  background: #000; /* Black background */
-  color: #90ee90;  /* Light green text */
-  border: 1px solid #90ee90;
-  padding: 8px 12px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-}
-
-/* Status Display */
-#status {
-  font-size: 1.2em;
-  margin: 10px 0 20px;
-  color: #ddd;
-}
-
 /* Button Styles */
 button {
-  display: inline-block;
-  padding: 10px 20px;
-  font-size: 1em;
+  display: flex; /* Makes the entire button clickable */
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  font-size: 1.2em;
   cursor: pointer;
   border: none;
   border-radius: 4px;
   transition: background 0.3s, transform 0.2s;
   box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  min-height: 50px;
+}
+
+/* Ensures both buttons have the same width */
+#ignite, #cashout {
+  width: 150px;
 }
 
 #ignite {
@@ -254,4 +166,41 @@ button:hover:not(:disabled) {
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Bottom Info Container */
+#bottom-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+}
+
+/* Total Discount Display */
+#discount-display {
+  font-size: 1.2em;
+  background: rgba(0,0,0,0.7);
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+/* Current Run Discount Display */
+#current-discount {
+  font-size: 1.2em;
+  background: #000;
+  color: #90ee90;
+  border: 1px solid #90ee90;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+/* Status Display */
+#status {
+  font-size: 1.2em;
+  margin: 10px 0 20px;
+  color: #ddd;
 }
