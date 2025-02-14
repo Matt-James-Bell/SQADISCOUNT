@@ -46,12 +46,22 @@ function updateBottomScale() {
     label.style.left = (leftPos - 10) + "px";
     bottomScale.appendChild(label);
   }
+  const rocketWrapper = document.getElementById("rocket-wrapper");
+  const container = document.getElementById("rocket-container");
+  const rocketRect = rocketWrapper.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+  const rocketCenterX = rocketRect.left - containerRect.left + rocketRect.width / 2;
+  const marker = document.createElement("div");
+  marker.className = "tick-marker";
+  marker.style.left = rocketCenterX + "px";
+  bottomScale.appendChild(marker);
 }
 
 function updateVerticalTicker() {
   const verticalTicker = document.getElementById("vertical-ticker");
   verticalTicker.innerHTML = "";
-  const containerHeight = document.getElementById("rocket-container").offsetHeight;
+  const container = document.getElementById("rocket-container");
+  const containerHeight = container.offsetHeight;
   let windowMin, windowMax;
   if (discount < 1.0) {
     windowMin = 0.01;
@@ -75,6 +85,12 @@ function updateVerticalTicker() {
     label.style.top = (topPos - 5) + "px";
     verticalTicker.appendChild(label);
   }
+  const rocketWrapper = document.getElementById("rocket-wrapper");
+  const rocketCenterY = rocketWrapper.offsetTop + rocketWrapper.offsetHeight / 2;
+  const marker = document.createElement("div");
+  marker.className = "v-tick-marker";
+  marker.style.top = rocketCenterY + "px";
+  verticalTicker.appendChild(marker);
 }
 
 function updateRocketPosition() {
@@ -111,12 +127,30 @@ function startGame() {
   startTime = Date.now();
   updateDisplay();
   document.getElementById("status").textContent = "Run in progress... Hit Cash Out to lock in your discount!";
+  if (playerJoined) {
+    document.getElementById("cashout").disabled = false;
+  } else {
+    document.getElementById("cashout").disabled = true;
+  }
   document.getElementById("ignite").disabled = true;
-  document.getElementById("cashout").disabled = false;
-
+  
+  document.getElementById("rocket-wrapper").style.display = "block";
+  document.getElementById("explosion").style.display = "none";
+  
+  updateRocketPosition();
+  updateBottomScale();
+  updateVerticalTicker();
+  
   let r = Math.random();
-  crashPoint = r < 0.9 ? Math.random() * (3.00 - 1.00) + 1.00 : Math.random() * (100.00 - 3.00) + 3.00;
-
+  if (r < 0.1) {
+    crashPoint = Math.random() * (0.05 - 0.01) + 0.01;
+  } else if (r < 0.9) {
+    crashPoint = Math.random() * (3.00 - 1.00) + 1.00;
+  } else {
+    crashPoint = Math.random() * (100.00 - 3.00) + 3.00;
+  }
+  console.log("Crash point set at: " + crashPoint.toFixed(2) + "%");
+  
   gameInterval = setInterval(updateGame, 50);
 }
 
@@ -124,28 +158,94 @@ function updateGame() {
   if (!gameActive) return;
   let elapsed = (Date.now() - startTime) / 1000;
   discount = 0.01 + elapsed * discountRate;
-  if (discount >= crashPoint) crash();
+  if (discount > 100) discount = 100;
+  
   updateDisplay();
   updateRocketPosition();
   updateBottomScale();
   updateVerticalTicker();
+  
+  if (discount >= crashPoint) {
+    crash();
+  }
 }
 
 function crash() {
   gameActive = false;
   crashed = true;
   clearInterval(gameInterval);
+  if (playerJoined) {
+    accumulatedDiscount = 0;
+    updateAccumulatedDiscount();
+  }
+  const rocketWrapper = document.getElementById("rocket-wrapper");
+  rocketWrapper.style.display = "none";
+  const explosionElem = document.getElementById("explosion");
+  explosionElem.style.left = rocketWrapper.style.left;
+  explosionElem.style.bottom = rocketWrapper.style.bottom;
+  explosionElem.style.display = "block";
+  explosionElem.classList.add("explode");
   document.getElementById("status").textContent = "Run crashed!";
+  document.getElementById("cashout").disabled = true;
+  document.getElementById("ignite").disabled = true;
+  setTimeout(startCountdown, 2000);
 }
 
 function cashOut() {
-  if (!gameActive || crashed) return;
+  if (!gameActive || crashed || !playerJoined) return;
   gameActive = false;
   clearInterval(gameInterval);
   updateDisplay();
   document.getElementById("status").textContent = "Cashed out at " + discount.toFixed(2) + "% discount!";
   document.getElementById("cashout").disabled = true;
+  document.getElementById("ignite").disabled = true;
+  accumulatedDiscount += discount;
+  updateAccumulatedDiscount();
+  document.getElementById("ship-discount").style.color = "#fff";
+  document.getElementById("status").textContent += " Congratulations!";
+  setTimeout(startCountdown, 2000);
 }
 
-document.getElementById("ignite").addEventListener("click", startGame);
+function updateAccumulatedDiscount() {
+  document.getElementById("discount-display").textContent = "Total Discount: " + accumulatedDiscount.toFixed(2) + "%";
+}
+
+function startCountdown() {
+  playerJoined = false;
+  const countdownDiv = document.getElementById("countdown");
+  let duration = firstRun ? 10 : 5;
+  countdownDiv.style.display = "block";
+  countdownDiv.textContent = duration;
+  document.getElementById("ignite").disabled = false;
+  countdownInterval = setInterval(() => {
+    duration--;
+    if (duration > 0) {
+      countdownDiv.textContent = duration;
+    } else {
+      clearInterval(countdownInterval);
+      countdownDiv.style.display = "none";
+      if (!gameActive) {
+        playerJoined = false;
+        document.getElementById("ignite").disabled = true;
+        document.getElementById("cashout").disabled = true;
+        startRun();
+      }
+    }
+  }, 1000);
+  firstRun = false;
+}
+
+function startRun() {
+  document.getElementById("ignite").disabled = true;
+  startGame();
+}
+
+window.addEventListener("load", startCountdown);
+
+document.getElementById("ignite").addEventListener("click", () => {
+  clearInterval(countdownInterval);
+  document.getElementById("countdown").style.display = "none";
+  playerJoined = true;
+  startRun();
+});
 document.getElementById("cashout").addEventListener("click", cashOut);
