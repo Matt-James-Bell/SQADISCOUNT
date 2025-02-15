@@ -157,6 +157,10 @@ function startGame() {
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
   
+  // Set lower volumes: background music very low, explosion moderately low
+  document.getElementById("bg-music").volume = 0.1;
+  document.getElementById("explosion-sound").volume = 0.3;
+  
   // Start playing background music and rocket flight sound
   document.getElementById("bg-music").play();
   document.getElementById("rocket-sound").play();
