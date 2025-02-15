@@ -1,5 +1,5 @@
 // Global variables
-let discount = 0.01;
+let discount = 0.00; // Start at 0.00%
 const discountRate = 0.2;
 let gameInterval;
 let gameActive = false;
@@ -9,14 +9,14 @@ let startTime;
 let accumulatedDiscount = 0;
 let playerJoined = false;
 let countdownInterval;
-let firstRun = true; // First run: 10 sec; subsequent: 5 sec
+let firstRun = true; // First run: 5 sec; subsequent: 5 sec
 
 // Volume control elements
 const bgVolumeSlider = document.getElementById("bg-volume");
 const explosionVolumeSlider = document.getElementById("explosion-volume");
 const rocketVolumeSlider = document.getElementById("rocket-volume");
 
-// Update tick markers using offset values
+// Update horizontal tick bar using offset values
 function updateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
   bottomScale.innerHTML = "";
@@ -88,7 +88,6 @@ function updateVerticalTicker() {
   verticalTicker.appendChild(marker);
 }
 
-// Update rocket position
 function updateRocketPosition() {
   const container = document.getElementById("rocket-container");
   const rocketWrapper = document.getElementById("rocket-wrapper");
@@ -100,7 +99,7 @@ function updateRocketPosition() {
   let centerY = (containerHeight - wrapperHeight) / 2;
   
   if (discount < 1.0) {
-    let t = (discount - 0.01) / (1 - 0.01);
+    let t = (discount - 0.00) / (1 - 0.00);
     let newLeft = t * centerX;
     let newBottom = t * centerY;
     rocketWrapper.style.left = newLeft + "px";
@@ -111,13 +110,11 @@ function updateRocketPosition() {
   }
 }
 
-// Update display text
 function updateDisplay() {
   document.getElementById("ship-discount").textContent = discount.toFixed(2) + "% Discount";
   document.getElementById("current-discount").textContent = "Current: " + discount.toFixed(2) + "%";
 }
 
-// Spawn next flying object (one at a time, above the rocket)
 function spawnNextFlyingObject() {
   if (!gameActive) return;
   const container = document.getElementById("rocket-container");
@@ -143,11 +140,10 @@ function spawnNextFlyingObject() {
   });
 }
 
-// Game control functions
 function updateGame() {
   if (!gameActive) return;
   let elapsed = (Date.now() - startTime) / 1000;
-  discount = 0.01 + elapsed * discountRate;
+  discount = 0.00 + elapsed * discountRate;
   if (discount > 100) discount = 100;
   
   updateDisplay();
@@ -161,20 +157,23 @@ function updateGame() {
 }
 
 function startGame() {
-  discount = 0.01;
+  discount = 0.00; // Run starts at 0.00%
   crashed = false;
   gameActive = true;
   startTime = Date.now();
   updateDisplay();
   document.getElementById("status").textContent = "Run in progress... Hit Cash Out to lock in your discount!";
   
-  // Unlock cash out button when player hits Blast off
-  document.getElementById("cashout").disabled = false;
+  // Only unlock cash out if the player pressed Blast off
+  if (playerJoined) {
+    document.getElementById("cashout").disabled = false;
+  } else {
+    document.getElementById("cashout").disabled = true;
+  }
   
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
   
-  // Set volumes from sliders
   const bgMusic = document.getElementById("bg-music");
   const explosionSound = document.getElementById("explosion-sound");
   const rocketSound = document.getElementById("rocket-sound");
@@ -182,7 +181,6 @@ function startGame() {
   explosionSound.volume = parseFloat(explosionVolumeSlider.value);
   rocketSound.volume = parseFloat(rocketVolumeSlider.value);
   
-  // Start playing sounds
   bgMusic.play();
   rocketSound.play();
   
@@ -201,8 +199,6 @@ function startGame() {
   console.log("Crash point set at: " + crashPoint.toFixed(2) + "%");
   
   gameInterval = setInterval(updateGame, 50);
-  
-  // Start the chain of flying objects (one at a time)
   spawnNextFlyingObject();
 }
 
@@ -211,16 +207,11 @@ function crash() {
   crashed = true;
   clearInterval(gameInterval);
   
-  // Stop rocket flight sound and play explosion sound
   const rocketSound = document.getElementById("rocket-sound");
   rocketSound.pause();
   rocketSound.currentTime = 0;
   document.getElementById("explosion-sound").play();
   
-  if (playerJoined) {
-    accumulatedDiscount = 0;
-    updateAccumulatedDiscount();
-  }
   document.getElementById("rocket-wrapper").style.display = "none";
   const explosionElem = document.getElementById("explosion");
   explosionElem.style.left = document.getElementById("rocket-wrapper").style.left;
@@ -238,10 +229,8 @@ function cashOut() {
   gameActive = false;
   clearInterval(gameInterval);
   
-  // Play cash out sound
   document.getElementById("cashout-sound").play();
   
-  // Stop rocket flight sound
   const rocketSound = document.getElementById("rocket-sound");
   rocketSound.pause();
   rocketSound.currentTime = 0;
@@ -267,10 +256,11 @@ function startCountdown() {
   
   playerJoined = false;
   const countdownDiv = document.getElementById("countdown");
-  let duration = firstRun ? 10 : 5;
+  let duration = 5; // Changed countdown duration to 5 seconds
   countdownDiv.style.display = "block";
   countdownDiv.textContent = duration;
   document.getElementById("ignite").disabled = false;
+  
   countdownInterval = setInterval(() => {
     duration--;
     if (duration > 0) {
@@ -278,9 +268,8 @@ function startCountdown() {
     } else {
       clearInterval(countdownInterval);
       countdownDiv.style.display = "none";
-      if (!gameActive) {
-        playerJoined = false;
-        document.getElementById("ignite").disabled = true;
+      // If the player did not press Blast off before countdown finishes, disable cash out
+      if (!playerJoined) {
         document.getElementById("cashout").disabled = true;
         startRun();
       }
@@ -300,7 +289,7 @@ document.getElementById("ignite").addEventListener("click", () => {
   clearInterval(countdownInterval);
   document.getElementById("countdown").style.display = "none";
   playerJoined = true;
-  // Unlock cash out when Blast off is pressed
+  // Unlock cash out since the player pressed Blast off
   document.getElementById("cashout").disabled = false;
   startRun();
 });
