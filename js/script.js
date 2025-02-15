@@ -16,7 +16,7 @@ const bgVolumeSlider = document.getElementById("bg-volume");
 const explosionVolumeSlider = document.getElementById("explosion-volume");
 const rocketVolumeSlider = document.getElementById("rocket-volume");
 
-// --- Updated Tick Marker Functions using offset properties ---
+// Update tick markers to match rocket's center using offset values
 function updateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
   bottomScale.innerHTML = "";
@@ -44,7 +44,6 @@ function updateBottomScale() {
     label.style.left = (leftPos - 10) + "px";
     bottomScale.appendChild(label);
   }
-  // Use offsetLeft for a more reliable measurement
   const rocketWrapper = document.getElementById("rocket-wrapper");
   const rocketCenterX = rocketWrapper.offsetLeft + rocketWrapper.offsetWidth / 2;
   const marker = document.createElement("div");
@@ -89,36 +88,7 @@ function updateVerticalTicker() {
   verticalTicker.appendChild(marker);
 }
 
-// --- Updated Flying Object Spawn (one at a time, above the rocket) ---
-function spawnNextFlyingObject() {
-  if (!gameActive) return;
-  const container = document.getElementById("rocket-container");
-  const rocketWrapper = document.getElementById("rocket-wrapper");
-  // Get rocket's top (using offsetTop relative to container)
-  const rocketTop = rocketWrapper.offsetTop;
-  // Determine maximum allowed top for flying object (ensure it's above the rocket)
-  const maxTop = Math.max(rocketTop - 70, 0); // subtract object height (approx 70px)
-  const randomTop = Math.random() * maxTop;
-  
-  const flyingImages = ["alien1.png", "alien2.png", "ufo1.png", "ufo2.png", "astro1.png", "saturn1.png", "earth1.png"];
-  const imageFile = flyingImages[Math.floor(Math.random() * flyingImages.length)];
-  const flyingElem = document.createElement("img");
-  flyingElem.src = "img/" + imageFile;
-  flyingElem.className = "flying-object";
-  flyingElem.style.top = randomTop + "px";
-  
-  container.appendChild(flyingElem);
-  
-  // When animation ends, remove the object and spawn the next one (if game is active)
-  flyingElem.addEventListener("animationend", () => {
-    flyingElem.remove();
-    if (gameActive) {
-      spawnNextFlyingObject();
-    }
-  });
-}
-
-// --- Game Control Functions ---
+// Update rocket position
 function updateRocketPosition() {
   const container = document.getElementById("rocket-container");
   const rocketWrapper = document.getElementById("rocket-wrapper");
@@ -131,8 +101,8 @@ function updateRocketPosition() {
   
   if (discount < 1.0) {
     let t = (discount - 0.01) / (1 - 0.01);
-    let newLeft = (1 - t) * 0 + t * centerX;
-    let newBottom = (1 - t) * 0 + t * centerY;
+    let newLeft = t * centerX;
+    let newBottom = t * centerY;
     rocketWrapper.style.left = newLeft + "px";
     rocketWrapper.style.bottom = newBottom + "px";
   } else {
@@ -141,11 +111,39 @@ function updateRocketPosition() {
   }
 }
 
+// Update display text
 function updateDisplay() {
   document.getElementById("ship-discount").textContent = discount.toFixed(2) + "% Discount";
   document.getElementById("current-discount").textContent = "Current: " + discount.toFixed(2) + "%";
 }
 
+// Spawn next flying object (one at a time, above the rocket)
+function spawnNextFlyingObject() {
+  if (!gameActive) return;
+  const container = document.getElementById("rocket-container");
+  const rocketWrapper = document.getElementById("rocket-wrapper");
+  const rocketTop = rocketWrapper.offsetTop;
+  const maxTop = Math.max(rocketTop - 70, 0);
+  const randomTop = Math.random() * maxTop;
+  
+  const flyingImages = ["alien1.png", "alien2.png", "ufo1.png", "ufo2.png", "astro1.png", "saturn1.png", "earth1.png"];
+  const imageFile = flyingImages[Math.floor(Math.random() * flyingImages.length)];
+  const flyingElem = document.createElement("img");
+  flyingElem.src = "img/" + imageFile;
+  flyingElem.className = "flying-object";
+  flyingElem.style.top = randomTop + "px";
+  
+  container.appendChild(flyingElem);
+  
+  flyingElem.addEventListener("animationend", () => {
+    flyingElem.remove();
+    if (gameActive) {
+      spawnNextFlyingObject();
+    }
+  });
+}
+
+// Game control functions
 function updateGame() {
   if (!gameActive) return;
   let elapsed = (Date.now() - startTime) / 1000;
@@ -169,7 +167,10 @@ function startGame() {
   startTime = Date.now();
   updateDisplay();
   document.getElementById("status").textContent = "Run in progress... Hit Cash Out to lock in your discount!";
-  document.getElementById("ignite").disabled = true;
+  
+  // Unlock cash out immediately when player hits Ignite
+  document.getElementById("cashout").disabled = false;
+  
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
   
@@ -181,7 +182,7 @@ function startGame() {
   explosionSound.volume = parseFloat(explosionVolumeSlider.value);
   rocketSound.volume = parseFloat(rocketVolumeSlider.value);
   
-  // Start playing background music and rocket flight sound
+  // Start playing sounds
   bgMusic.play();
   rocketSound.play();
   
@@ -237,7 +238,7 @@ function cashOut() {
   gameActive = false;
   clearInterval(gameInterval);
   
-  // Play cashout sound
+  // Play cash out sound
   document.getElementById("cashout-sound").play();
   
   // Stop rocket flight sound
@@ -299,6 +300,8 @@ document.getElementById("ignite").addEventListener("click", () => {
   clearInterval(countdownInterval);
   document.getElementById("countdown").style.display = "none";
   playerJoined = true;
+  // Unlock cash out button when ignite is pressed
+  document.getElementById("cashout").disabled = false;
   startRun();
 });
 document.getElementById("cashout").addEventListener("click", cashOut);
