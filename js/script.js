@@ -16,7 +16,7 @@ const bgVolumeSlider = document.getElementById("bg-volume");
 const explosionVolumeSlider = document.getElementById("explosion-volume");
 const rocketVolumeSlider = document.getElementById("rocket-volume");
 
-// Update tick markers to match rocket's center using offset values
+// Update tick markers using offset values
 function updateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
   bottomScale.innerHTML = "";
@@ -168,7 +168,7 @@ function startGame() {
   updateDisplay();
   document.getElementById("status").textContent = "Run in progress... Hit Cash Out to lock in your discount!";
   
-  // Unlock cash out immediately when player hits Ignite
+  // Unlock cash out button when player hits Blast off
   document.getElementById("cashout").disabled = false;
   
   document.getElementById("rocket-wrapper").style.display = "block";
@@ -300,7 +300,7 @@ document.getElementById("ignite").addEventListener("click", () => {
   clearInterval(countdownInterval);
   document.getElementById("countdown").style.display = "none";
   playerJoined = true;
-  // Unlock cash out button when ignite is pressed
+  // Unlock cash out when Blast off is pressed
   document.getElementById("cashout").disabled = false;
   startRun();
 });
