@@ -13,16 +13,9 @@ let firstRun = true; // First run: 10 sec; subsequent: 5 sec
 let flyingInterval; // Interval for spawning flying objects
 
 // Volume control elements
-const volumeToggle = document.getElementById("volume-toggle");
-const volumeControls = document.getElementById("sound-bar");
 const bgVolumeSlider = document.getElementById("bg-volume");
 const explosionVolumeSlider = document.getElementById("explosion-volume");
 const rocketVolumeSlider = document.getElementById("rocket-volume");
-
-// Toggle sound bar panel slide-out
-volumeToggle.addEventListener("click", () => {
-  volumeControls.classList.toggle("open");
-});
 
 function mapDiscountToNormalized(d) {
   if (d <= 2.00) {
@@ -297,7 +290,7 @@ function updateAccumulatedDiscount() {
 }
 
 function startCountdown() {
-  // Start background music as soon as the countdown begins
+  // Start playing background music as soon as countdown begins
   document.getElementById("bg-music").play();
   
   playerJoined = false;
