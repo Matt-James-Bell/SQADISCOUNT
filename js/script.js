@@ -176,11 +176,11 @@ function startGame() {
   // Start spawning flying objects at random intervals during the game
   flyingInterval = setInterval(() => {
     if (gameActive) {
-      // 30% chance each second to spawn flying objects
-      if (Math.random() < 0.3) {
+      // 20% chance each second to spawn a flying object
+      if (Math.random() < 0.2) {
         spawnFlyingObject();
-        // 50% chance to spawn a second object shortly after
-        if (Math.random() < 0.5) {
+        // 30% chance to spawn a second object shortly after
+        if (Math.random() < 0.3) {
           setTimeout(spawnFlyingObject, 500);
         }
       }
