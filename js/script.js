@@ -13,8 +13,8 @@ let firstRun = true; // First run: 5 sec; subsequent: 5 sec
 
 // Volume control elements
 const bgVolumeSlider = document.getElementById("bg-volume");
-const explosionVolumeSlider = document.getElementById("explosion-volume");
-const rocketVolumeSlider = document.getElementById("rocket-volume");
+const sfxVolumeSlider = document.getElementById("sfx-volume");
+const cashoutVolumeSlider = document.getElementById("cashout-volume");
 
 // Update horizontal tick bar using offset values
 function updateBottomScale() {
@@ -178,8 +178,8 @@ function startGame() {
   const explosionSound = document.getElementById("explosion-sound");
   const rocketSound = document.getElementById("rocket-sound");
   bgMusic.volume = parseFloat(bgVolumeSlider.value);
-  explosionSound.volume = parseFloat(explosionVolumeSlider.value);
-  rocketSound.volume = parseFloat(rocketVolumeSlider.value);
+  explosionSound.volume = parseFloat(sfxVolumeSlider.value);
+  rocketSound.volume = parseFloat(sfxVolumeSlider.value);
   
   bgMusic.play();
   rocketSound.play();
@@ -207,6 +207,10 @@ function crash() {
   crashed = true;
   clearInterval(gameInterval);
   
+  // Lose all accumulated discounts if the run crashes
+  accumulatedDiscount = 0;
+  updateAccumulatedDiscount();
+  
   const rocketSound = document.getElementById("rocket-sound");
   rocketSound.pause();
   rocketSound.currentTime = 0;
@@ -218,7 +222,7 @@ function crash() {
   explosionElem.style.bottom = document.getElementById("rocket-wrapper").style.bottom;
   explosionElem.style.display = "block";
   explosionElem.classList.add("explode");
-  document.getElementById("status").textContent = "Run crashed!";
+  document.getElementById("status").textContent = "Run crashed! Total discount lost!";
   document.getElementById("cashout").disabled = true;
   document.getElementById("ignite").disabled = true;
   setTimeout(startCountdown, 2000);
@@ -229,7 +233,9 @@ function cashOut() {
   gameActive = false;
   clearInterval(gameInterval);
   
-  document.getElementById("cashout-sound").play();
+  const cashoutSound = document.getElementById("cashout-sound");
+  cashoutSound.volume = parseFloat(cashoutVolumeSlider.value);
+  cashoutSound.play();
   
   const rocketSound = document.getElementById("rocket-sound");
   rocketSound.pause();
@@ -256,7 +262,7 @@ function startCountdown() {
   
   playerJoined = false;
   const countdownDiv = document.getElementById("countdown");
-  let duration = 5; // Changed countdown duration to 5 seconds
+  let duration = 5; // Countdown duration: 5 seconds
   countdownDiv.style.display = "block";
   countdownDiv.textContent = duration;
   document.getElementById("ignite").disabled = false;
@@ -268,7 +274,7 @@ function startCountdown() {
     } else {
       clearInterval(countdownInterval);
       countdownDiv.style.display = "none";
-      // If the player did not press Blast off before countdown finishes, disable cash out
+      // If the player did not press Blast off before countdown finishes, disable cash out and start run automatically
       if (!playerJoined) {
         document.getElementById("cashout").disabled = true;
         startRun();
@@ -294,3 +300,19 @@ document.getElementById("ignite").addEventListener("click", () => {
   startRun();
 });
 document.getElementById("cashout").addEventListener("click", cashOut);
+
+// Continuous volume control for all sounds
+bgVolumeSlider.addEventListener("input", () => {
+  const bgMusic = document.getElementById("bg-music");
+  bgMusic.volume = parseFloat(bgVolumeSlider.value);
+});
+sfxVolumeSlider.addEventListener("input", () => {
+  const explosionSound = document.getElementById("explosion-sound");
+  const rocketSound = document.getElementById("rocket-sound");
+  explosionSound.volume = parseFloat(sfxVolumeSlider.value);
+  rocketSound.volume = parseFloat(sfxVolumeSlider.value);
+});
+cashoutVolumeSlider.addEventListener("input", () => {
+  const cashoutSound = document.getElementById("cashout-sound");
+  cashoutSound.volume = parseFloat(cashoutVolumeSlider.value);
+});
