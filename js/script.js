@@ -13,8 +13,8 @@ let firstRun = true; // First run: 5 sec; subsequent: 5 sec
 
 // Volume control elements
 const bgVolumeSlider = document.getElementById("bg-volume");
-const sfxVolumeSlider = document.getElementById("sfx-volume");
-const cashoutVolumeSlider = document.getElementById("cashout-volume");
+const explosionVolumeSlider = document.getElementById("explosion-volume");
+const rocketVolumeSlider = document.getElementById("rocket-volume");
 
 // Update horizontal tick bar using offset values
 function updateBottomScale() {
@@ -177,12 +177,9 @@ function startGame() {
   const bgMusic = document.getElementById("bg-music");
   const explosionSound = document.getElementById("explosion-sound");
   const rocketSound = document.getElementById("rocket-sound");
-  const cashoutSound = document.getElementById("cashout-sound");
-  
   bgMusic.volume = parseFloat(bgVolumeSlider.value);
-  explosionSound.volume = parseFloat(sfxVolumeSlider.value);
-  rocketSound.volume = parseFloat(sfxVolumeSlider.value);
-  cashoutSound.volume = parseFloat(cashoutVolumeSlider.value);
+  explosionSound.volume = parseFloat(explosionVolumeSlider.value);
+  rocketSound.volume = parseFloat(rocketVolumeSlider.value);
   
   bgMusic.play();
   rocketSound.play();
@@ -232,9 +229,7 @@ function cashOut() {
   gameActive = false;
   clearInterval(gameInterval);
   
-  const cashoutSound = document.getElementById("cashout-sound");
-  cashoutSound.volume = parseFloat(cashoutVolumeSlider.value);
-  cashoutSound.play();
+  document.getElementById("cashout-sound").play();
   
   const rocketSound = document.getElementById("rocket-sound");
   rocketSound.pause();
