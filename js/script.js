@@ -14,11 +14,12 @@ let flyingInterval; // Interval for spawning flying objects
 
 // Volume control elements
 const volumeToggle = document.getElementById("volume-toggle");
-const volumeControls = document.getElementById("volume-controls");
+const volumeControls = document.getElementById("sound-bar");
 const bgVolumeSlider = document.getElementById("bg-volume");
 const explosionVolumeSlider = document.getElementById("explosion-volume");
+const rocketVolumeSlider = document.getElementById("rocket-volume");
 
-// Toggle volume panel slide-out
+// Toggle sound bar panel slide-out
 volumeToggle.addEventListener("click", () => {
   volumeControls.classList.toggle("open");
 });
@@ -168,15 +169,17 @@ function startGame() {
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
   
-  // Set volumes: background music very low, explosion sound at slider value
+  // Set volumes using the slider values
   const bgMusic = document.getElementById("bg-music");
   const explosionSound = document.getElementById("explosion-sound");
+  const rocketSound = document.getElementById("rocket-sound");
   bgMusic.volume = parseFloat(bgVolumeSlider.value);
   explosionSound.volume = parseFloat(explosionVolumeSlider.value);
+  rocketSound.volume = parseFloat(rocketVolumeSlider.value);
   
   // Start playing background music and rocket flight sound
   bgMusic.play();
-  document.getElementById("rocket-sound").play();
+  rocketSound.play();
   
   updateRocketPosition();
   updateBottomScale();
@@ -216,6 +219,10 @@ bgVolumeSlider.addEventListener("input", () => {
 
 explosionVolumeSlider.addEventListener("input", () => {
   document.getElementById("explosion-sound").volume = parseFloat(explosionVolumeSlider.value);
+});
+
+rocketVolumeSlider.addEventListener("input", () => {
+  document.getElementById("rocket-sound").volume = parseFloat(rocketVolumeSlider.value);
 });
 
 function updateGame() {
