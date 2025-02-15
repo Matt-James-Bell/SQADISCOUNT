@@ -1,4 +1,4 @@
-// The dynamic discount starts at 0.01%
+// Global variables
 let discount = 0.01;
 const discountRate = 0.2;
 let gameInterval;
@@ -10,21 +10,13 @@ let accumulatedDiscount = 0;
 let playerJoined = false;
 let countdownInterval;
 let firstRun = true; // First run: 10 sec; subsequent: 5 sec
-let flyingInterval; // Interval for spawning flying objects
 
 // Volume control elements
 const bgVolumeSlider = document.getElementById("bg-volume");
 const explosionVolumeSlider = document.getElementById("explosion-volume");
 const rocketVolumeSlider = document.getElementById("rocket-volume");
 
-function mapDiscountToNormalized(d) {
-  if (d <= 2.00) {
-    return ((d - 0.01) / (2.00 - 0.01)) * 0.3;
-  } else {
-    return 0.3 + ((d - 2.00) / (100.00 - 2.00)) * 0.7;
-  }
-}
-
+// --- Updated Tick Marker Functions using offset properties ---
 function updateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
   bottomScale.innerHTML = "";
@@ -52,11 +44,9 @@ function updateBottomScale() {
     label.style.left = (leftPos - 10) + "px";
     bottomScale.appendChild(label);
   }
+  // Use offsetLeft for a more reliable measurement
   const rocketWrapper = document.getElementById("rocket-wrapper");
-  const container = document.getElementById("rocket-container");
-  const rocketRect = rocketWrapper.getBoundingClientRect();
-  const containerRect = container.getBoundingClientRect();
-  const rocketCenterX = rocketRect.left - containerRect.left + rocketRect.width / 2;
+  const rocketCenterX = rocketWrapper.offsetLeft + rocketWrapper.offsetWidth / 2;
   const marker = document.createElement("div");
   marker.className = "tick-marker";
   marker.style.left = rocketCenterX + "px";
@@ -99,6 +89,36 @@ function updateVerticalTicker() {
   verticalTicker.appendChild(marker);
 }
 
+// --- Updated Flying Object Spawn (one at a time, above the rocket) ---
+function spawnNextFlyingObject() {
+  if (!gameActive) return;
+  const container = document.getElementById("rocket-container");
+  const rocketWrapper = document.getElementById("rocket-wrapper");
+  // Get rocket's top (using offsetTop relative to container)
+  const rocketTop = rocketWrapper.offsetTop;
+  // Determine maximum allowed top for flying object (ensure it's above the rocket)
+  const maxTop = Math.max(rocketTop - 70, 0); // subtract object height (approx 70px)
+  const randomTop = Math.random() * maxTop;
+  
+  const flyingImages = ["alien1.png", "alien2.png", "ufo1.png", "ufo2.png", "astro1.png", "saturn1.png", "earth1.png"];
+  const imageFile = flyingImages[Math.floor(Math.random() * flyingImages.length)];
+  const flyingElem = document.createElement("img");
+  flyingElem.src = "img/" + imageFile;
+  flyingElem.className = "flying-object";
+  flyingElem.style.top = randomTop + "px";
+  
+  container.appendChild(flyingElem);
+  
+  // When animation ends, remove the object and spawn the next one (if game is active)
+  flyingElem.addEventListener("animationend", () => {
+    flyingElem.remove();
+    if (gameActive) {
+      spawnNextFlyingObject();
+    }
+  });
+}
+
+// --- Game Control Functions ---
 function updateRocketPosition() {
   const container = document.getElementById("rocket-container");
   const rocketWrapper = document.getElementById("rocket-wrapper");
@@ -126,23 +146,20 @@ function updateDisplay() {
   document.getElementById("current-discount").textContent = "Current: " + discount.toFixed(2) + "%";
 }
 
-function spawnFlyingObject() {
-  const container = document.getElementById("rocket-container");
-  const flyingImages = ["alien1.png", "alien2.png", "ufo1.png", "ufo2.png", "astro1.png", "saturn1.png", "earth1.png"];
-  const imageFile = flyingImages[Math.floor(Math.random() * flyingImages.length)];
-  const flyingElem = document.createElement("img");
-  flyingElem.src = "img/" + imageFile;
-  flyingElem.className = "flying-object";
-  // Set a random vertical position within the container (keeping within bounds)
-  const containerHeight = container.offsetHeight;
-  const randomTop = Math.random() * (containerHeight - 100) + 20;
-  flyingElem.style.top = randomTop + "px";
-  // Append the element so it starts its animation from offscreen right
-  container.appendChild(flyingElem);
-  // Remove the element once the animation completes
-  flyingElem.addEventListener("animationend", () => {
-    flyingElem.remove();
-  });
+function updateGame() {
+  if (!gameActive) return;
+  let elapsed = (Date.now() - startTime) / 1000;
+  discount = 0.01 + elapsed * discountRate;
+  if (discount > 100) discount = 100;
+  
+  updateDisplay();
+  updateRocketPosition();
+  updateBottomScale();
+  updateVerticalTicker();
+  
+  if (discount >= crashPoint) {
+    crash();
+  }
 }
 
 function startGame() {
@@ -152,17 +169,11 @@ function startGame() {
   startTime = Date.now();
   updateDisplay();
   document.getElementById("status").textContent = "Run in progress... Hit Cash Out to lock in your discount!";
-  if (playerJoined) {
-    document.getElementById("cashout").disabled = false;
-  } else {
-    document.getElementById("cashout").disabled = true;
-  }
   document.getElementById("ignite").disabled = true;
-  
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
   
-  // Set volumes using the slider values
+  // Set volumes from sliders
   const bgMusic = document.getElementById("bg-music");
   const explosionSound = document.getElementById("explosion-sound");
   const rocketSound = document.getElementById("rocket-sound");
@@ -190,55 +201,14 @@ function startGame() {
   
   gameInterval = setInterval(updateGame, 50);
   
-  // Start spawning flying objects at random intervals during the game
-  flyingInterval = setInterval(() => {
-    if (gameActive) {
-      // 20% chance each second to spawn a flying object
-      if (Math.random() < 0.2) {
-        spawnFlyingObject();
-        // 30% chance to spawn a second object shortly after
-        if (Math.random() < 0.3) {
-          setTimeout(spawnFlyingObject, 500);
-        }
-      }
-    }
-  }, 1000);
-}
-
-// Update volume in real time based on slider changes
-bgVolumeSlider.addEventListener("input", () => {
-  document.getElementById("bg-music").volume = parseFloat(bgVolumeSlider.value);
-});
-
-explosionVolumeSlider.addEventListener("input", () => {
-  document.getElementById("explosion-sound").volume = parseFloat(explosionVolumeSlider.value);
-});
-
-rocketVolumeSlider.addEventListener("input", () => {
-  document.getElementById("rocket-sound").volume = parseFloat(rocketVolumeSlider.value);
-});
-
-function updateGame() {
-  if (!gameActive) return;
-  let elapsed = (Date.now() - startTime) / 1000;
-  discount = 0.01 + elapsed * discountRate;
-  if (discount > 100) discount = 100;
-  
-  updateDisplay();
-  updateRocketPosition();
-  updateBottomScale();
-  updateVerticalTicker();
-  
-  if (discount >= crashPoint) {
-    crash();
-  }
+  // Start the chain of flying objects (one at a time)
+  spawnNextFlyingObject();
 }
 
 function crash() {
   gameActive = false;
   crashed = true;
   clearInterval(gameInterval);
-  clearInterval(flyingInterval);
   
   // Stop rocket flight sound and play explosion sound
   const rocketSound = document.getElementById("rocket-sound");
@@ -250,11 +220,10 @@ function crash() {
     accumulatedDiscount = 0;
     updateAccumulatedDiscount();
   }
-  const rocketWrapper = document.getElementById("rocket-wrapper");
-  rocketWrapper.style.display = "none";
+  document.getElementById("rocket-wrapper").style.display = "none";
   const explosionElem = document.getElementById("explosion");
-  explosionElem.style.left = rocketWrapper.style.left;
-  explosionElem.style.bottom = rocketWrapper.style.bottom;
+  explosionElem.style.left = document.getElementById("rocket-wrapper").style.left;
+  explosionElem.style.bottom = document.getElementById("rocket-wrapper").style.bottom;
   explosionElem.style.display = "block";
   explosionElem.classList.add("explode");
   document.getElementById("status").textContent = "Run crashed!";
@@ -267,7 +236,9 @@ function cashOut() {
   if (!gameActive || crashed || !playerJoined) return;
   gameActive = false;
   clearInterval(gameInterval);
-  clearInterval(flyingInterval);
+  
+  // Play cashout sound
+  document.getElementById("cashout-sound").play();
   
   // Stop rocket flight sound
   const rocketSound = document.getElementById("rocket-sound");
