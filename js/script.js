@@ -157,6 +157,10 @@ function startGame() {
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
   
+  // Start playing background music and rocket flight sound
+  document.getElementById("bg-music").play();
+  document.getElementById("rocket-sound").play();
+  
   updateRocketPosition();
   updateBottomScale();
   updateVerticalTicker();
@@ -209,6 +213,13 @@ function crash() {
   crashed = true;
   clearInterval(gameInterval);
   clearInterval(flyingInterval);
+  
+  // Stop rocket flight sound and play explosion sound
+  const rocketSound = document.getElementById("rocket-sound");
+  rocketSound.pause();
+  rocketSound.currentTime = 0;
+  document.getElementById("explosion-sound").play();
+  
   if (playerJoined) {
     accumulatedDiscount = 0;
     updateAccumulatedDiscount();
@@ -231,6 +242,12 @@ function cashOut() {
   gameActive = false;
   clearInterval(gameInterval);
   clearInterval(flyingInterval);
+  
+  // Stop rocket flight sound
+  const rocketSound = document.getElementById("rocket-sound");
+  rocketSound.pause();
+  rocketSound.currentTime = 0;
+  
   updateDisplay();
   document.getElementById("status").textContent = "Cashed out at " + discount.toFixed(2) + "% discount!";
   document.getElementById("cashout").disabled = true;
