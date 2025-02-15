@@ -284,8 +284,8 @@ button:disabled {
   z-index: 2;
 }
 
-/* Volume Control Panel */
-#volume-controls {
+/* Sound Bar Control Panel */
+#sound-bar {
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -315,7 +315,7 @@ button:disabled {
   font-size: 0.9em;
 }
 
-#volume-controls.open #volume-panel {
+#sound-bar.open #volume-panel {
   max-width: 250px;
   padding: 10px;
 }
