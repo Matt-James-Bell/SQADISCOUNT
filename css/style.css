@@ -279,7 +279,7 @@ button:disabled {
   position: absolute;
   animation: flyBy 8s linear forwards;
   pointer-events: none;
-  /* Adjust size if necessary */
-  width: 50px;
+  /* Increased size */
+  width: 70px;
   z-index: 2;
 }
