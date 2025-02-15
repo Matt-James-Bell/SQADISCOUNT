@@ -297,6 +297,9 @@ function updateAccumulatedDiscount() {
 }
 
 function startCountdown() {
+  // Start background music as soon as the countdown begins
+  document.getElementById("bg-music").play();
+  
   playerJoined = false;
   const countdownDiv = document.getElementById("countdown");
   let duration = firstRun ? 10 : 5;
