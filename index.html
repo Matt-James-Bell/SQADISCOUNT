@@ -40,8 +40,8 @@
     </div>
   </div>
 
-  <!-- Volume Control Panel -->
-  <div id="volume-controls">
+  <!-- Sound Bar Control Panel -->
+  <div id="sound-bar">
     <button id="volume-toggle">▼</button>
     <div id="volume-panel">
       <label for="bg-volume">Background Music:</label>
@@ -49,13 +49,16 @@
       <br>
       <label for="explosion-volume">Explosion Sound:</label>
       <input type="range" id="explosion-volume" min="0" max="1" step="0.01" value="0.2">
+      <br>
+      <label for="rocket-volume">Rocket Flight Sound:</label>
+      <input type="range" id="rocket-volume" min="0" max="1" step="0.01" value="0.05">
     </div>
   </div>
 
   <!-- Audio Elements -->
   <audio id="bg-music" src="audio/bgmusic.wav" loop></audio>
   <audio id="explosion-sound" src="audio/explosion.wav"></audio>
-  <!-- Changed rocket flight sound source from .wav to .mp3 -->
+  <!-- Rocket flight sound now uses an MP3 source -->
   <audio id="rocket-sound" src="audio/rocket-flight.mp3" loop></audio>
   
   <script src="js/script.js"></script>
