@@ -12,6 +12,17 @@ let countdownInterval;
 let firstRun = true; // First run: 10 sec; subsequent: 5 sec
 let flyingInterval; // Interval for spawning flying objects
 
+// Volume control elements
+const volumeToggle = document.getElementById("volume-toggle");
+const volumeControls = document.getElementById("volume-controls");
+const bgVolumeSlider = document.getElementById("bg-volume");
+const explosionVolumeSlider = document.getElementById("explosion-volume");
+
+// Toggle volume panel slide-out
+volumeToggle.addEventListener("click", () => {
+  volumeControls.classList.toggle("open");
+});
+
 function mapDiscountToNormalized(d) {
   if (d <= 2.00) {
     return ((d - 0.01) / (2.00 - 0.01)) * 0.3;
@@ -157,12 +168,14 @@ function startGame() {
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
   
-  // Set lower volumes: background music very low, explosion moderately low
-  document.getElementById("bg-music").volume = 0.1;
-  document.getElementById("explosion-sound").volume = 0.3;
+  // Set volumes: background music very low, explosion sound at slider value
+  const bgMusic = document.getElementById("bg-music");
+  const explosionSound = document.getElementById("explosion-sound");
+  bgMusic.volume = parseFloat(bgVolumeSlider.value);
+  explosionSound.volume = parseFloat(explosionVolumeSlider.value);
   
   // Start playing background music and rocket flight sound
-  document.getElementById("bg-music").play();
+  bgMusic.play();
   document.getElementById("rocket-sound").play();
   
   updateRocketPosition();
@@ -195,6 +208,15 @@ function startGame() {
     }
   }, 1000);
 }
+
+// Update volume in real time based on slider changes
+bgVolumeSlider.addEventListener("input", () => {
+  document.getElementById("bg-music").volume = parseFloat(bgVolumeSlider.value);
+});
+
+explosionVolumeSlider.addEventListener("input", () => {
+  document.getElementById("explosion-sound").volume = parseFloat(explosionVolumeSlider.value);
+});
 
 function updateGame() {
   if (!gameActive) return;
